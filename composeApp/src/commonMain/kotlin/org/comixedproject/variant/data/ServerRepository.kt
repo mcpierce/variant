@@ -18,6 +18,10 @@
 
 package org.comixedproject.variant.data
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.comixedproject.variant.db.ServerDb
 import org.comixedproject.variant.model.Server
 
@@ -35,14 +39,16 @@ class ServerRepository(private val databaseHelper: DatabaseHelper) {
         databaseHelper.save(IdGenerator().toString(), name, url, username, password, serverColor)
     }
 
-    fun updateServer(server: Server) {
+    fun updateServer(server: Server, accessed: Boolean = false) {
         databaseHelper.update(
             server.id,
             server.name,
             server.url,
             server.username,
             server.password,
-            server.serverColor
+            server.serverColor,
+            if (accessed) Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()) else server.lastAccessedOn
         )
     }
 
@@ -60,5 +66,6 @@ fun ServerDb.map() = Server(
     url = this.url,
     username = this.username,
     password = this.password,
-    serverColor = this.serverColor
+    serverColor = this.serverColor,
+    lastAccessedOn = if (this.lastAccessedOn != null) LocalDateTime.parse(this.lastAccessedOn) else null
 )

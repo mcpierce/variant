@@ -22,31 +22,10 @@ import org.comixedproject.variant.data.ServerRepository
 import org.comixedproject.variant.model.Server
 
 /**
- * <code>MainViewModel</code> represents the state of the application.
+ * <code>ServerViewModel</code> holds the state for working with a single server.
  *
  * @author Darryl L. Pierce
  */
-class MainViewModel(private val serverRepository: ServerRepository) : BaseViewModel() {
-    internal val serverList: List<Server>
-        get() = serverRepository.serverList
-
-    var currentServer: Server? = null
-
-    fun createServer(
-        name: String,
-        url: String,
-        username: String,
-        password: String,
-        serverColor: String
-    ) {
-        serverRepository.createServer(name, url, username, password, serverColor)
-    }
-
-    fun updateServer(server: Server) {
-        serverRepository.updateServer(server)
-    }
-
-    fun removeServer(server: Server) {
-        serverRepository.removeServer(server)
-    }
+class ServerViewModel(private val serverRepository: ServerRepository) : BaseViewModel() {
+    var server: Server? = null
 }

@@ -1,4 +1,4 @@
-package org.comixedproject.variant.ui.server
+package org.comixedproject.variant.ui.server.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.comixedproject.variant.model.ServerColorChoice
+import org.comixedproject.variant.ui.server.fromHex
 
 /**
  * Presents a color to the user for selection.

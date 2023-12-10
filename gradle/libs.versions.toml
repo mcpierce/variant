@@ -20,6 +20,7 @@ napier = "2.6.1"
 kotlinxDateTime = "0.4.1"
 koin = "3.4.3"
 sqldelight = "2.0.0"
+readium_version = "2.4.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -51,6 +52,8 @@ sqldelight-driver-android = { group = "app.cash.sqldelight", name = "android-dri
 sqldelight-driver-native = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqldelight" }
 sqldelight-driver-sqlite = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqldelight" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.4.1" }
+readium-shared = { group = "org.readium.kotlin-toolkit", name="readium-shared", version.ref ="readium_version" }
+readium-opds = { group = "org.readium.kotlin-toolkit", name="readium-opds", version.ref ="readium_version" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

@@ -19,6 +19,7 @@
 package org.comixedproject.variant.data
 
 import app.cash.sqldelight.db.SqlDriver
+import kotlinx.datetime.LocalDateTime
 import org.comixedproject.variant.VariantDb
 import org.comixedproject.variant.db.ServerDb
 
@@ -49,9 +50,18 @@ class DatabaseHelper(sqlDriver: SqlDriver) {
         url: String,
         username: String,
         password: String,
-        serverColor: String
+        serverColor: String,
+        lastAccessedOn: LocalDateTime?
     ) {
-        database.tableQueries.updateServer(name, url, username, password, serverColor, id)
+        database.tableQueries.updateServer(
+            name,
+            url,
+            username,
+            password,
+            serverColor,
+            lastAccessedOn?.toString(),
+            id
+        )
     }
 
     fun delete(id: String) {

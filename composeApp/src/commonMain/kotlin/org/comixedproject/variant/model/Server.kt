@@ -31,15 +31,9 @@ data class Server(
     val url: String,
     val username: String,
     val password: String,
-    val serverColor: String = ServerColorChoice.DEFAULT.hex
+    val serverColor: String = ServerColorChoice.DEFAULT.hex,
+    var lastAccessedOn: LocalDateTime? = null
 ) {
-    private var _lastAccessedOn: LocalDateTime? = null
-    var lastAccessedOn: LocalDateTime?
-        get() = _lastAccessedOn
-        set(accessed) {
-            _lastAccessedOn = accessed
-        }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false

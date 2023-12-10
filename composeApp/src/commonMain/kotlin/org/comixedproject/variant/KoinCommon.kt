@@ -20,7 +20,7 @@ package org.comixedproject.variant
 
 import org.comixedproject.variant.data.DatabaseHelper
 import org.comixedproject.variant.data.ServerRepository
-import org.comixedproject.variant.viewmodel.MainViewModel
+import org.comixedproject.variant.viewmodel.ServerListViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -36,7 +36,7 @@ object Modules {
     }
 
     val viewModels = module {
-        factory { MainViewModel(get()) }
+        factory { ServerListViewModel(get()) }
     }
 }
 

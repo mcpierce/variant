@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-package org.comixedproject.variant.ui.server
+package org.comixedproject.variant.ui.server.list
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,22 +26,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.comixedproject.variant.VariantTheme
 import org.comixedproject.variant.model.Server
-import org.comixedproject.variant.ui.bottomNavigationItems
 
 /**
  * Displays the list of serversm, and a button to add a new entry.
@@ -50,10 +40,8 @@ import org.comixedproject.variant.ui.bottomNavigationItems
  */
 @Composable
 fun ServerList(
-    serverList: List<Server>, onAdd: () -> Unit, onEdit: (Server) -> Unit
+    serverList: List<Server>, onAdd: () -> Unit, onEdit: (Server) -> Unit, onOpen: (Server) -> Unit
 ) {
-    val selectedIndex = remember { mutableIntStateOf(0) }
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd,
@@ -65,39 +53,13 @@ fun ServerList(
                 }
             )
         },
-        floatingActionButtonPosition = FabPosition.End,
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
-                bottomNavigationItems.forEachIndexed { index, bottomNavigationItem ->
-                    NavigationBarItem(
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.White,
-                            selectedTextColor = Color.White,
-                            unselectedIconColor = Color.Black,
-                            unselectedTextColor = Color.Black,
-                            indicatorColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        label = {
-                            Text(
-                                stringResource(id = bottomNavigationItem.label),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                bottomNavigationItem.icon,
-                                contentDescription = stringResource(id = bottomNavigationItem.label)
-                            )
-                        },
-                        selected = (selectedIndex.intValue == index),
-                        onClick = { selectedIndex.intValue = index })
-                }
-            }
-        }
+        floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(serverList) { entry ->
-                ServerListEntry(entry = entry, onClick = { onEdit(entry) })
+                ServerListEntry(entry = entry,
+                    onClick = { server -> onOpen(server) },
+                    onEdit = { server -> onEdit(server) })
             }
         }
     }
@@ -123,6 +85,6 @@ fun ServerListScreenAndroidPreview() {
         ),
     )
     VariantTheme {
-        ServerList(serverList, onAdd = {}, onEdit = {})
+        ServerList(serverList, onAdd = {}, onEdit = {}, onOpen = {})
     }
 }

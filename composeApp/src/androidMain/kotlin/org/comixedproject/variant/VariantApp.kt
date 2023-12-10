@@ -20,7 +20,8 @@ package org.comixedproject.variant
 
 import android.app.Application
 import android.content.Context
-import org.comixedproject.variant.viewmodel.MainViewModel
+import org.comixedproject.variant.viewmodel.ServerListViewModel
+import org.comixedproject.variant.viewmodel.ServerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -31,7 +32,8 @@ class VariantApp : Application() {
         initKoin(
             appModule = module {
                 single<Context> { this@VariantApp }
-                viewModel { MainViewModel(get()) }
+                viewModel { ServerListViewModel(get()) }
+                viewModel { ServerViewModel(get()) }
             }
         )
     }

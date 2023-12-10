@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-package org.comixedproject.variant.ui.server
+package org.comixedproject.variant.ui.server.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -28,24 +28,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.comixedproject.variant.R
 import org.comixedproject.variant.data.IdGenerator
 import org.comixedproject.variant.model.Server
 import org.comixedproject.variant.model.ServerColorChoice
+import org.comixedproject.variant.ui.server.detail.ServerColor
+import org.comixedproject.variant.ui.server.fromHex
 
 /**
  * Displays a single server in the list of servers.
@@ -53,10 +58,9 @@ import org.comixedproject.variant.model.ServerColorChoice
  * @author Darryl L. Pierce
  */
 @Composable
-fun ServerListEntry(entry: Server, onClick: (Server) -> Unit) {
+fun ServerListEntry(entry: Server, onClick: (Server) -> Unit, onEdit: (Server) -> Unit) {
     Box(
         modifier = Modifier
-            .clickable { onClick(entry) }
             .fillMaxWidth()
             .height(140.dp)
             .background(MaterialTheme.colorScheme.background)
@@ -65,7 +69,9 @@ fun ServerListEntry(entry: Server, onClick: (Server) -> Unit) {
         Card(
             shape = RoundedCornerShape(8.dp),
             border = BorderStroke(1.dp, Color.Gray),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .clickable { onClick(entry) }
+                .fillMaxWidth()
         ) {
             Box(
                 modifier =
@@ -78,42 +84,52 @@ fun ServerListEntry(entry: Server, onClick: (Server) -> Unit) {
                 {
                     ServerColor(
                         modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(8.dp),
+                            .align(Alignment.CenterVertically),
                         color = ServerColorChoice.fromHex(entry.serverColor),
                         size = 40.dp,
                         border = 1.dp
                     )
                     Column(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .weight(1.0f),
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
                             text = entry.name,
-                            style = TextStyle(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(text = entry.url)
                         if (entry.lastAccessedOn != null) {
-                            Text(
-                                entry.lastAccessedOn!!.toString(),
-                                style = TextStyle(
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp
+                            val now =
+                                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                                    .toInstant(
+                                        TimeZone.currentSystemDefault()
+                                    )
+                            val days =
+                                entry.lastAccessedOn!!.toInstant(TimeZone.currentSystemDefault())
+                                    .minus(now).inWholeDays
+                            val text =
+                                if (days == 0L) stringResource(id = R.string.last_accessed_today_text) else stringResource(
+                                    id = R.string.last_accessed_text,
+                                    days
                                 )
+                            Text(
+                                text = text,
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                         Text(
-                            entry.username, style = TextStyle(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
+                            entry.username, style = MaterialTheme.typography.bodyMedium
                         )
                     }
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .clickable { onEdit(entry) },
+                        imageVector = Icons.Filled.MoreVert, contentDescription =
+                        stringResource(id = R.string.server_action_menu_description)
+                    )
                 }
             }
         }
@@ -122,7 +138,7 @@ fun ServerListEntry(entry: Server, onClick: (Server) -> Unit) {
 
 @Preview
 @Composable
-fun ServerDetailCardAndroidPreview() {
+fun ServerDetailCardLastAccessedTodayAndroidPreview() {
     val entry = Server(
         IdGenerator().toString(),
         "Preview Server",
@@ -133,7 +149,7 @@ fun ServerDetailCardAndroidPreview() {
     entry.lastAccessedOn = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     ServerListEntry(
-        entry = entry, onClick = {}
+        entry = entry, onClick = {}, onEdit = {}
     )
 }
 
@@ -148,6 +164,7 @@ fun ServerDetailCardNeverAccessedAndroidPreview() {
             "comixedreader@localhost",
             "comixedreader"
         ),
-        onClick = {}
+        onClick = {},
+        onEdit = {}
     )
 }

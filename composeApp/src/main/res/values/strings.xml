@@ -16,4 +16,8 @@
     <string name="server_list_label">Servers</string>
     <string name="comic_book_list_label">Comics</string>
     <string name="settings_label">Settings</string>
+    <string name="server_action_menu_description">open server actions menu</string>
+    <string name="last_accessed_text">Last accessed %d days ago</string>
+    <string name="last_accessed_today_text">Last accessed today</string>
+    <string name="return_to_server_list_description">return to server list</string>
 </resources>

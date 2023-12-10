@@ -44,6 +44,8 @@ kotlin {
             implementation(libs.datetime)
             implementation(libs.koin.core)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.readium.shared)
+            implementation(libs.readium.opds)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
