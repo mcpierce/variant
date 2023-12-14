@@ -36,6 +36,17 @@ kotlin {
                 implementation(libs.compose.ui.tooling.preview)
             }
         }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.test.junit)
+                implementation(libs.compose.test)
+                implementation(libs.compose.test.manifest)
+                implementation(libs.androidx.compose.test.junit4)
+                implementation(libs.androidx.test.espresso)
+                implementation(libs.androidx.test.runner)
+                implementation(libs.androidx.test.rules)
+            }
+        }
         val iosMain by creating {
             dependencies {
                 implementation(libs.ktor.client.ios)
@@ -80,6 +91,7 @@ kotlin {
 android {
     namespace = "org.comixedproject.variant"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+
     defaultConfig {
         applicationId = "org.comixedproject.variant"
         minSdk = libs.versions.android.minSdk.get().toInt()

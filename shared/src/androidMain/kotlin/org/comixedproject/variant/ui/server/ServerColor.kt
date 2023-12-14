@@ -29,11 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.comixedproject.variant.VariantTheme
 
+
+val TAG_SERVER_COLOR_BOX = "tag_server_color_box"
 
 /**
  * Displays a color indicator next to the name of a server.
@@ -53,6 +56,7 @@ fun ServerColor(
             .clip(CircleShape)
             .background(color)
             .border(BorderStroke(border, SolidColor(Color.Black)), CircleShape)
+            .testTag(TAG_SERVER_COLOR_BOX)
     )
 }
 
