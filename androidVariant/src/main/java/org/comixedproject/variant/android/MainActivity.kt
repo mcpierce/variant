@@ -54,7 +54,6 @@ class MainActivity : ComponentActivity() {
 
                     HomeView(
                         serverList,
-                        serverLinkViewModel.directory,
                         linkList,
                         onSaveServer = { serverId, name, url, username, password ->
                             serverViewModel.onSaveServer(

@@ -27,7 +27,7 @@ CREATE TABLE ServerLinksDb (
   identifier TEXT NOT NULL,
   linkType TEXT NOT NULL,
   href TEXT NOT NULL,
-  title TEXT,
+  title TEXT NOT NULL,
   FOREIGN KEY(serverId) REFERENCES ServersDb(serverId)
 );
 

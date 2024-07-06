@@ -16,31 +16,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-package org.comixedproject.variant.android.ui.server
+package org.comixedproject.variant.shared.model.comic
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import org.comixedproject.variant.android.VariantTheme
-import org.comixedproject.variant.android.ui.SERVER_LIST
-import org.comixedproject.variant.shared.model.server.Server
-
-/**
- * <code>ServerDetailView</code> composes a view showing the details for a single server.
- *
- * @author Darryl L. Pierce
- */
-@Composable
-fun ServerDetailView(server: Server) {
-    Text(server.name)
-}
-
-@Preview
-@Composable
-fun ServerDetailPreview() {
-    VariantTheme {
-        ServerDetailView(
-            SERVER_LIST.get(0)
-        )
+actual class ComicManager {
+    actual fun comicDirectory(): List<Comic> {
+        TODO("Not yet implemented")
     }
+
+    actual fun storeComic(
+        comic: Comic,
+        publisher: String,
+        series: String,
+        volume: String,
+        issueNumber: String
+    ): String {
+        TODO("Not yet implemented")
+    }
+
+    actual fun loadComic(key: String): Comic {
+        TODO("Not yet implemented")
+    }
+
 }

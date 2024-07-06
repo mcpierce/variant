@@ -30,7 +30,7 @@ data class ServerLink(
     val serverId: Long,
     val directory: String,
     val identifier: String,
-    val title: String? = null,
+    val title: String,
     val href: String,
     val linkType: ServerLinkType,
 )

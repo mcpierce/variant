@@ -66,59 +66,73 @@ class ServerLinkViewModel : ViewModel() {
         url: String,
         reload: Boolean,
     ) {
-        Logger.d(
-            TAG,
-            "Loading url: server=${server.name} url=$url reload=$reload",
-        )
-        val httpClient =
-            DefaultHttpClient(
-                userAgent = "CX-Variant",
-                callback = HttpCallback(server)
+        Logger.d(TAG,"Checking for existing links: serverId=${server.serverId} directory=${url}")
+        val noLinkFound =
+            serverLinkRespository.serverLinks
+                .filter { link -> link.serverId == server.serverId }
+                .filter { link -> link.directory == url }
+                .isEmpty()
+
+        if (reload || noLinkFound) {
+            Logger.d(
+                TAG,
+                "Loading url: server=${server.name} url=$url reload=$reload",
             )
-        val parser = OPDS1Parser.parseUrlString(url, httpClient)
-        val feed = parser.getOrNull()?.feed
-        if (feed == null) {
-            Logger.d(TAG, "No feed elements retrieved")
-        } else {
-            val links: MutableList<ServerLink> = mutableListOf()
-            if (!feed.navigation.isEmpty()) {
-                feed.navigation.forEach { link ->
+            val httpClient =
+                DefaultHttpClient(
+                    userAgent = "CX-Variant",
+                    callback = HttpCallback(server)
+                )
+            val parser = OPDS1Parser.parseUrlString(url, httpClient)
+            val feed = parser.getOrNull()?.feed
+            if (feed == null) {
+                Logger.d(TAG, "No feed elements retrieved")
+            } else {
+                val links: MutableList<ServerLink> = mutableListOf()
+                if (!feed.navigation.isEmpty()) {
+                    feed.navigation.forEach { link ->
+                        if (link.title == null) {
+                            Logger.w(TAG, "Link has no title: ${link.href}")
+                        } else {
+                            links.add(
+                                ServerLink(
+                                    null,
+                                    server.serverId!!,
+                                    url,
+                                    "",
+                                    link.title ?: "",
+                                    link.href.toString(),
+                                    ServerLinkType.NAVIGATION,
+                                ),
+                            )
+                        }
+                    }
+                }
+                feed.publications.forEach { publication ->
+                    val identifier = publication.metadata.identifier ?: ""
+                    val title = publication.metadata.title ?: ""
+                    val link =
+                        publication.links
+                            .filter { link ->
+                                (link.mediaType?.type ?: "").startsWith("application/")
+                            }.firstOrNull()
+                            ?.href.toString()
+
                     links.add(
                         ServerLink(
                             null,
                             server.serverId!!,
                             url,
-                            "",
-                            link.title,
-                            link.href.toString(),
-                            ServerLinkType.NAVIGATION,
+                            identifier,
+                            title,
+                            link,
+                            ServerLinkType.PUBLICATION,
                         ),
                     )
                 }
+                serverLinkRespository.saveLinksForServer(server, url, links)
             }
-            feed.publications.forEach { publication ->
-                val identifier = publication.metadata.identifier ?: ""
-                val title = publication.metadata.title
-                val link =
-                    publication.links
-                        .filter { link ->
-                            (link.mediaType?.type ?: "").startsWith("application/")
-                        }.firstOrNull()
-                        ?.href.toString()
-
-                links.add(
-                    ServerLink(
-                        null,
-                        server.serverId!!,
-                        url,
-                        identifier,
-                        title,
-                        link,
-                        ServerLinkType.PUBLICATION,
-                    ),
-                )
-            }
-            serverLinkRespository.saveLinksForServer(server, url, links)
+            Logger.d(TAG,"Updating server links")
             viewModelScope.launch {
                 _serverLinkListFlow.emit(serverLinkRespository.serverLinks)
             }

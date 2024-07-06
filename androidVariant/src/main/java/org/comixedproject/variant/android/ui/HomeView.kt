@@ -60,7 +60,6 @@ private const val TAG = "HomeScreen"
 @Composable
 fun HomeView(
     serverList: List<Server>,
-    directory: String,
     linkList: List<ServerLink>,
     onSaveServer: (Long?, String, String, String, String) -> Unit,
     onServerLoadDirectory: (Server, String, Boolean) -> Unit
@@ -146,11 +145,11 @@ fun HomeView(
                                 .filter { link -> link.serverId == currentServer.serverId }
                                 .filter { link -> link.directory == currentParent }
                                 .toList(),
-                            directory,
                             onLoadDirectory = { target, selectedLink ->
                                 onServerLoadDirectory(target, selectedLink.href, false)
                                 navController.navigate("${NavigationScreen.BrowseServer.route}/${target.serverId}/${selectedLink.serverLinkId}")
                             },
+                            onDownloadFile = { target, selectedLink -> }
                         )
                     }
                 }
@@ -167,17 +166,10 @@ fun HomeView(
 
 @Preview
 @Composable
-fun HomeSPreview() {
+fun HomePreview() {
     VariantTheme {
         HomeView(
-            listOf(
-                Server(null, "Server 1", "", "", ""),
-                Server(null, "Server 2", "", "", ""),
-                Server(null, "Server 3", "", "", ""),
-                Server(null, "Server 4", "", "", ""),
-                Server(null, "Server 5", "", "", ""),
-            ),
-            "",
+            SERVER_LIST,
             emptyList(),
             onSaveServer = { _, _, _, _, _ -> },
             onServerLoadDirectory = { _, _, _ -> }
