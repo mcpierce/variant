@@ -29,11 +29,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import org.comixedproject.variant.android.ui.home.HomeView
-import org.comixedproject.variant.android.viewmodel.PublicationViewModel
-import org.comixedproject.variant.android.viewmodel.ServerLinkViewModel
-import org.comixedproject.variant.android.viewmodel.ServerViewModel
 import org.comixedproject.variant.android.viewmodel.SplashScreenViewModel
-import org.comixedproject.variant.android.viewmodel.VariantViewModel
+import org.comixedproject.variant.shared.platform.Logger
+import org.comixedproject.variant.shared.viewmodel.VariantViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 private const val TAG = "MainActivity"
 
@@ -43,16 +42,12 @@ private const val TAG = "MainActivity"
  * @author Darryl L. Pierce
  */
 class MainActivity : ComponentActivity() {
-    private val variantViewModel: VariantViewModel by viewModels()
-    private val serverViewModel: ServerViewModel by viewModels()
-    private val serverLinkViewModel: ServerLinkViewModel by viewModels()
-    private val publicationViewModel: PublicationViewModel by viewModels()
-    private val splashViewModel: SplashScreenViewModel by viewModels()
+    private val screenViewModel: SplashScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             this.setKeepOnScreenCondition {
-                splashViewModel.isSplashShow.value
+                screenViewModel.isSplashShow.value
             }
         }
 
@@ -64,8 +59,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
+                    val variantViewModel: VariantViewModel = getViewModel()
+
                     HomeView(
-                        variantViewModel.serverList.collectAsState().value
+                        variantViewModel.serverList.collectAsState().value,
+                        onSaveServer = { server ->
+                            Logger.d(TAG, "Saving server: name=${server.name}")
+                            variantViewModel.saveServer(server)
+                        },
+                        onDeleteServer = { server ->
+                            Logger.d(TAG, "Deleting server: name=${server.name}")
+                            variantViewModel.deleteServer(server)
+                        }
                     )
                 }
             }
