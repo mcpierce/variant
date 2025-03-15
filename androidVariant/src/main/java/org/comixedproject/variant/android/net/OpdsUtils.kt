@@ -21,28 +21,21 @@ package org.comixedproject.variant.android.net
 import org.comixedproject.variant.shared.model.server.Server
 import org.comixedproject.variant.shared.model.server.ServerLink
 import org.comixedproject.variant.shared.model.server.ServerLinkType
-import org.readium.r2.opds.OPDS1Parser
+import org.readium.r2.shared.opds.ParseData
 
 private val TAG = "OpdsUtils"
 
 /**
- * Loads the contents from a server's directory.
- *
- * @param server the server
- * @param directory the directory
- * @param onSuccess the callback for success
- * @param onFailure the callback for failure
+ * Parses the payload of an OPDS request.
  */
-suspend fun loadServerLinks(
+fun processOpdsData(
     server: Server,
     directory: String,
+    parser: ParseData,
     onSuccess: (List<ServerLink>) -> Unit,
     onFailure: () -> Unit
 ) {
-
-    val httpClient = createOpdsHttpClient(server)
-    val parser = OPDS1Parser.parseUrlString(directory, httpClient)
-    val feed = parser.getOrNull()?.feed
+    val feed = parser.feed
     if (feed == null) {
         onFailure()
     } else {

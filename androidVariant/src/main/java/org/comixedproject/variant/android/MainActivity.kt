@@ -31,14 +31,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.launch
-import org.comixedproject.variant.android.net.loadServerLinks
-import org.comixedproject.variant.android.ui.Screen
+import org.comixedproject.variant.android.net.processOpdsData
 import org.comixedproject.variant.android.ui.home.HomeView
 import org.comixedproject.variant.android.viewmodel.SplashScreenViewModel
+import org.comixedproject.variant.shared.net.loadServerDirectory
 import org.comixedproject.variant.shared.platform.Logger
 import org.comixedproject.variant.shared.viewmodel.ServerLinkViewModel
 import org.comixedproject.variant.shared.viewmodel.ServerViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.readium.r2.opds.OPDS1Parser
+import org.readium.r2.shared.util.Url
 
 private const val TAG = "MainActivity"
 
@@ -79,33 +81,43 @@ class MainActivity : ComponentActivity() {
                     onDeleteServer = { server -> serverViewModel.deleteServer(server) },
                     onLoadServerContents = { server, directory, reload ->
                         if (reload || !serverLinkViewModel.hasLinks(server, directory)) {
-                            coroutineScope.launch {
-                                loadServerLinks(
-                                    server,
-                                    directory,
-                                    onSuccess = { links ->
-                                        serverLinkViewModel.saveLinks(
-                                            server,
-                                            directory,
-                                            links
-                                        )
-                                        serverLinkViewModel.loadLinks(server, directory)
-                                    },
-                                    onFailure = {
-                                        Logger.e(
-                                            TAG,
-                                            "Failed to download anything"
-                                        )
-                                    })
+                            val action = when (reload) {
+                                true -> "Reloading"
+                                else -> "Loading"
                             }
-                        } else {
-                            serverLinkViewModel.loadLinks(server, directory)
-                            val route =
-                                Screen.BrowseServerScreen.withArgs("${server.serverId}", directory)
                             Logger.d(
                                 TAG,
-                                "Loading screen: ${route}"
+                                "${action} contents: server=${server.name} directory=${directory}"
                             )
+                            coroutineScope.launch {
+                                loadServerDirectory(
+                                    server,
+                                    directory,
+                                    onProgress = { received, total ->
+                                        Logger.d(
+                                            TAG,
+                                            "Received ${received} of ${total} bytes"
+                                        )
+                                    },
+                                    onSuccess = { bytes ->
+                                        val parser = OPDS1Parser.parse(bytes, Url(directory)!!)
+                                        coroutineScope.launch {
+                                            processOpdsData(
+                                                server, directory,
+                                                parser, onSuccess = { links ->
+                                                    serverLinkViewModel.saveLinks(
+                                                        server,
+                                                        directory,
+                                                        links
+                                                    )
+                                                    serverLinkViewModel.loadLinks(server, directory)
+                                                }, onFailure = {})
+                                        }
+                                    },
+                                    onFailure = {})
+
+                            }
+                        } else {
                             serverLinkViewModel.loadLinks(server, directory)
                         }
                     })
