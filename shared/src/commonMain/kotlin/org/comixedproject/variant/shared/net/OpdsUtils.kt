@@ -21,9 +21,9 @@ package org.comixedproject.variant.shared.net
 import io.ktor.client.plugins.onDownload
 import io.ktor.client.request.prepareGet
 import io.ktor.client.request.url
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.util.toByteArray
+import io.ktor.client.statement.bodyAsText
 import org.comixedproject.variant.shared.model.server.Server
+import org.comixedproject.variant.shared.opds.OPDSParser
 import org.comixedproject.variant.shared.platform.Logger
 
 private val TAG = "OpdsUtils"
@@ -56,8 +56,8 @@ suspend fun loadServerDirectory(
 
         }.execute { response ->
             if (response.status.value in 200..299) {
-                val content = response.bodyAsChannel()
-                onSuccess(content.toByteArray())
+                val content = response.bodyAsText()
+                val links = OPDSParser().parse(content)
             } else {
                 Logger.e(TAG, "Failed to download directory")
                 onFailure()
