@@ -36,6 +36,8 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -55,6 +57,8 @@ import org.comixedproject.variant.shared.model.server.Server
 import org.comixedproject.variant.shared.model.server.ServerLink
 import org.comixedproject.variant.shared.model.server.ServerLinkType
 import org.comixedproject.variant.shared.platform.Logger
+import org.comixedproject.variant.shared.viewmodel.ComicBookViewModel
+import org.koin.androidx.compose.koinViewModel
 
 private const val TAG = "BrowseServerView"
 
@@ -72,11 +76,15 @@ fun BrowseServerView(
     isLoading: Boolean,
     serverLinkList: List<ServerLink>,
     onLoadDirectory: (String, Boolean) -> Unit,
-    onStopBrowsing: () -> Unit
+    onStopBrowsing: () -> Unit,
+    comicBookViewModel: ComicBookViewModel = koinViewModel()
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val coroutineScope = rememberCoroutineScope()
+    val isLoading by comicBookViewModel.isLoading.collectAsState()
+    val downloadCurrent by comicBookViewModel.downloadCurrent.collectAsState()
+    val downloadTotal by comicBookViewModel.downloadTotal.collectAsState()
 
     Scaffold(
         topBar = {
@@ -161,6 +169,20 @@ fun BrowseServerView(
                                                 }
                                             }
                                     }
+                                },
+                                onReadPublication = { link ->
+                                    coroutineScope.launch {
+                                        withContext(Dispatchers.IO) {
+                                            comicBookViewModel.loadComicBook(
+                                                server,
+                                                link.downloadLink
+                                            )
+                                        }
+                                    }
+                                    scaffoldNavigator.navigateTo(
+                                        ListDetailPaneScaffoldRole.Extra,
+                                        link
+                                    )
                                 })
                         }
                     )
@@ -171,6 +193,19 @@ fun BrowseServerView(
                             server,
                             link as ServerLink,
                             onClose = { scaffoldNavigator.navigateBack() })
+                    }
+                },
+                extraPane = {
+                    scaffoldNavigator.currentDestination?.content?.let { link ->
+                        if (isLoading) {
+                            if (downloadTotal > 0) {
+                                Text("Loaded ${downloadCurrent} of ${downloadTotal} bytes")
+                            } else {
+                                Text("Preparing to download comic content")
+                            }
+                        } else {
+                            Text("File was downloaded!")
+                        }
                     }
                 }
             )

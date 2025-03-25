@@ -41,7 +41,7 @@ class ServerLinkItemViewKtTest {
     @Test
     fun navigationLink_showsNavigationIcon() {
         composeTestRule.setContent {
-            ServerLinkListItemView(navigationServerLink, onLoadLink = {}, onShowInfo = {})
+            ServerLinkListItemView(navigationServerLink, onLoadLink = {}, onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_NAVIGATION_ICON).assertExists()
@@ -51,7 +51,7 @@ class ServerLinkItemViewKtTest {
     @Test
     fun navigationLink_showsTitle() {
         composeTestRule.setContent {
-            ServerLinkListItemView(navigationServerLink, onLoadLink = {}, onShowInfo = {})
+            ServerLinkListItemView(navigationServerLink, onLoadLink = {}, onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_SERVER_LINK_TITLE, useUnmergedTree = true).assertExists()
@@ -68,7 +68,7 @@ class ServerLinkItemViewKtTest {
             ServerLinkListItemView(
                 navigationServerLink,
                 onLoadLink = { clicked = true },
-                onShowInfo = {})
+                onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_NAVIGATION_ICON).performClick()
@@ -82,7 +82,7 @@ class ServerLinkItemViewKtTest {
             ServerLinkListItemView(
                 navigationServerLink,
                 onLoadLink = { clicked = true },
-                onShowInfo = {})
+                onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_SERVER_LINK_ITEM).performClick()
@@ -92,7 +92,7 @@ class ServerLinkItemViewKtTest {
     @Test
     fun publicationLink_showsPublicationIcon() {
         composeTestRule.setContent {
-            ServerLinkListItemView(publicationServerLink, onLoadLink = {}, onShowInfo = {})
+            ServerLinkListItemView(publicationServerLink, onLoadLink = {}, onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_PUBLICATION_ICON).assertExists()
@@ -102,7 +102,7 @@ class ServerLinkItemViewKtTest {
     @Test
     fun publicationLink_showsTitle() {
         composeTestRule.setContent {
-            ServerLinkListItemView(publicationServerLink, onLoadLink = {}, onShowInfo = {})
+            ServerLinkListItemView(publicationServerLink, onLoadLink = {}, onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_SERVER_LINK_TITLE, useUnmergedTree = true).assertExists()
@@ -113,13 +113,13 @@ class ServerLinkItemViewKtTest {
     }
 
     @Test
-    fun publicationLink_icon_onClick_callsShowInfo() {
+    fun publicationLink_icon_onReadPublication_callsShowInfo() {
         var clicked = false
         composeTestRule.setContent {
             ServerLinkListItemView(
                 publicationServerLink,
                 onLoadLink = { },
-                onShowInfo = { clicked = true })
+                onReadPublication = { clicked = true })
         }
 
         composeTestRule.onNodeWithTag(TAG_PUBLICATION_ICON).performClick()
@@ -133,7 +133,7 @@ class ServerLinkItemViewKtTest {
             ServerLinkListItemView(
                 publicationServerLink,
                 onLoadLink = { clicked = true },
-                onShowInfo = {})
+                onReadPublication = {})
         }
 
         composeTestRule.onNodeWithTag(TAG_SERVER_LINK_ITEM).performClick()

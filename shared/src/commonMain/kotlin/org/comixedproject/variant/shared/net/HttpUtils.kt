@@ -49,7 +49,7 @@ fun createHttpClientFor(server: Server, url: String): HttpClient {
     return HttpClient(getHttpClientEngineFactory()) {
         install(HttpTimeout) {
             socketTimeoutMillis = 60_000
-            requestTimeoutMillis = 60_000
+            requestTimeoutMillis = 600_000
         }
 
         install(Logging) {

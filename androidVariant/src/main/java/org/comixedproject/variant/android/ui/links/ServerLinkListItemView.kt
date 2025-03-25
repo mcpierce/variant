@@ -55,7 +55,11 @@ private val TAG = "ServerLinkListItemView"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServerLinkListItemView(serverLink: ServerLink, onLoadLink: () -> Unit, onShowInfo: () -> Unit) {
+fun ServerLinkListItemView(
+    serverLink: ServerLink,
+    onLoadLink: () -> Unit,
+    onReadPublication: () -> Unit
+) {
     ElevatedCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
@@ -111,7 +115,7 @@ fun ServerLinkListItemView(serverLink: ServerLink, onLoadLink: () -> Unit, onSho
                     IconButton(
                         onClick = {
                             Logger.d(TAG, "Information icon clicked")
-                            onShowInfo()
+                            onReadPublication()
                         },
                         modifier = Modifier.testTag(TAG_PUBLICATION_ICON)
                     ) {
@@ -132,7 +136,7 @@ fun ServerLinkItemPreview_navigationLink() {
         ServerLinkListItemView(
             SERVER_LINK_LIST.first { entry -> entry.linkType == ServerLinkType.NAVIGATION },
             onLoadLink = { },
-            onShowInfo = { })
+            onReadPublication = { })
     }
 }
 
@@ -143,6 +147,6 @@ fun ServerLinkItemPreview_publicationLink() {
         ServerLinkListItemView(
             SERVER_LINK_LIST.first { entry -> entry.linkType == ServerLinkType.PUBLICATION },
             onLoadLink = { },
-            onShowInfo = { })
+            onReadPublication = { })
     }
 }

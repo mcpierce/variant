@@ -20,11 +20,7 @@ package org.comixedproject.variant.android.ui.links
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import org.comixedproject.variant.android.VariantTheme
@@ -32,7 +28,6 @@ import org.comixedproject.variant.android.model.SERVER_LINK_LIST
 import org.comixedproject.variant.android.model.SERVER_LIST
 import org.comixedproject.variant.shared.model.server.Server
 import org.comixedproject.variant.shared.model.server.ServerLink
-import org.comixedproject.variant.shared.platform.Logger
 
 private val TAG = "ServerLinkListView"
 
@@ -41,47 +36,28 @@ private val TAG = "ServerLinkListView"
 fun ServerLinkListView(
     server: Server,
     serverLinkList: List<ServerLink>,
-    onLoadLink: (ServerLink) -> Unit
+    onLoadLink: (ServerLink) -> Unit,
+    onReadPublication: (ServerLink) -> Unit
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<ServerLink>()
-
-    ListDetailPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        value = navigator.scaffoldValue,
-        listPane = {
-            LazyColumn {
-                items(serverLinkList, key = { it.serverLinkId!! }) { serverLink ->
-                    ServerLinkListItemView(
-                        serverLink,
-                        onLoadLink = { onLoadLink(serverLink) },
-                        onShowInfo = {
-                            Logger.d(TAG, "Showing details for link: ${serverLink.title}")
-                            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, serverLink)
-                        }
-                    )
-                }
-            }
-        },
-        detailPane = {
-            navigator.currentDestination?.content?.let { serverLink ->
-                ServerLinkDetailView(server, serverLink, onClose = {
-                    Logger.d(TAG, "Closing server link details")
-                    navigator.navigateTo(ListDetailPaneScaffoldRole.List)
-                })
-            }
-        },
-        extraPane = {
-            navigator.currentDestination?.content?.let { serverLink ->
-                Text("Extra: ${serverLink.title}")
-            }
+    LazyColumn {
+        items(serverLinkList, key = { it.serverLinkId!! }) { serverLink ->
+            ServerLinkListItemView(
+                serverLink,
+                onLoadLink = { onLoadLink(serverLink) },
+                onReadPublication = { onReadPublication(serverLink) }
+            )
         }
-    )
+    }
 }
 
 @Composable
 @Preview
 fun ServerLinkListPreview() {
     VariantTheme {
-        ServerLinkListView(SERVER_LIST.get(0), SERVER_LINK_LIST, onLoadLink = { _ -> })
+        ServerLinkListView(
+            SERVER_LIST.get(0),
+            SERVER_LINK_LIST,
+            onLoadLink = { _ -> },
+            onReadPublication = { _ -> })
     }
 }

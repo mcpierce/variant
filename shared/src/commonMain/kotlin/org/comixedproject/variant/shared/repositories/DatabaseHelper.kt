@@ -22,6 +22,7 @@ import app.cash.sqldelight.db.SqlDriver
 import org.comixedproject.variant.database.VariantDb
 import org.comixedproject.variant.db.ServerLinksDb
 import org.comixedproject.variant.db.ServersDb
+import org.comixedproject.variant.shared.model.comic.ComicBook
 import org.comixedproject.variant.shared.model.server.Server
 import org.comixedproject.variant.shared.model.server.ServerLink
 
@@ -62,14 +63,6 @@ class DatabaseHelper(
 
     fun loadAllLinks(): List<ServerLinksDb> = database.tableQueries.loadAllLinks().executeAsList()
 
-    fun loadLinks(
-        serverId: Long,
-        directory: String,
-    ): List<ServerLinksDb> =
-        database.tableQueries
-            .loadLinksForParent(serverId, directory)
-            .executeAsList()
-
     fun saveLinksForServer(
         server: Server,
         directory: String,
@@ -96,11 +89,7 @@ class DatabaseHelper(
         }
     }
 
-    fun setStoredFilename(filename: String, serverLink: ServerLink) {
-        database.tableQueries.setStoredFilename(filename, serverLink.serverLinkId!!)
-    }
-
-    fun getServerLinkId(server: Server, directory: String): Long {
-        return database.tableQueries.getServerLinkId(server.serverId!!, directory).executeAsOne()
+    fun saveComicBook(comicBook: ComicBook) {
+        database.tableQueries.createComicBook(comicBook.serverId, comicBook.filename)
     }
 }

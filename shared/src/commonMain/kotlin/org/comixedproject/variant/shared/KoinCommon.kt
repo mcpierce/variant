@@ -18,9 +18,12 @@
 
 package org.comixedproject.variant.shared
 
+import org.comixedproject.variant.shared.managers.ComicBookManager
+import org.comixedproject.variant.shared.repositories.ComicBookRepository
 import org.comixedproject.variant.shared.repositories.DatabaseHelper
 import org.comixedproject.variant.shared.repositories.ServerLinkRepository
 import org.comixedproject.variant.shared.repositories.ServerRepository
+import org.comixedproject.variant.shared.viewmodel.ComicBookViewModel
 import org.comixedproject.variant.shared.viewmodel.ServerLinkViewModel
 import org.comixedproject.variant.shared.viewmodel.ServerViewModel
 import org.koin.core.KoinApplication
@@ -32,21 +35,20 @@ object Modules {
     val core =
         module {
             factory { DatabaseHelper(get()) }
+            factory { ComicBookManager() }
         }
 
     val repositories =
         module {
-            factory {
-                ServerRepository(get())
-            }
-            factory {
-                ServerLinkRepository(get(), get())
-            }
+            factory { ServerRepository(get()) }
+            factory { ServerLinkRepository(get()) }
+            factory { ComicBookRepository(get()) }
         }
 
     val viewModels = module {
         factory { ServerViewModel(get()) }
         factory { ServerLinkViewModel(get()) }
+        factory { ComicBookViewModel(get(), get()) }
     }
 }
 
