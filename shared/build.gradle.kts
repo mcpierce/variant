@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.auth)
             implementation(libs.korio)
+            implementation(libs.xmlutil)
             implementation(libs.kotlinx.datetime)
             api(libs.kmp.viewmodel.core)
         }
