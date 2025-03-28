@@ -49,6 +49,7 @@ readium-shared = { group = "org.readium.kotlin-toolkit", name = "readium-shared"
 readium-opds = { group = "org.readium.kotlin-toolkit", name = "readium-opds", version.ref = "readium" }
 readium-streamer = { group = "org.readium.kotlin-toolkit", name = "readium-streamer", version.ref = "readium" }
 readium-navigator = { group = "org.readium.kotlin-toolkit", name = "readium-navigator", version.ref = "readium" }
+xmlutil = { group = "io.github.pdvrieze.xmlutil", name = "serialization", version = "0.90.3" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk" }
 coil-compose-android = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 android-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
