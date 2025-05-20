@@ -19,22 +19,33 @@
 import SwiftUI
 import Variant
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct ContentView: View {
-  @StateObject var serverManager = ServerManager()
-  @StateObject var serverLinkManager = ServerLinkManager()
+    @StateObject var serverManager = ServerManager()
+    @StateObject var serverLinkManager = ServerLinkManager()
 
-  var body: some View {
-    Text("ComiXed Variant").font(.headline)
+    var body: some View {
+      NavigationStack {
+          TabView {
+              Tab("Comics", systemImage: "book.fill") {
+                  Text("Settings")
+              }
 
-    HomeView()
-      .environmentObject(serverManager)
-      .environmentObject(serverLinkManager)
-    Spacer()
+              Tab("Servers", systemImage: "server.rack") {
+                  ServersView()
+                      .environmentObject(serverManager)
+                      .environmentObject(serverLinkManager)
+              }
+
+              Tab("Settings", systemImage: "gearshape.fill") {
+                  Text("Settings")
+              }
+          }
+      }
   }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     ContentView()

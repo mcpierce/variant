@@ -47,6 +47,8 @@ class ServerLinkViewModel(
     val currentDirectory = _currentDirectory.asStateFlow()
     val currentServerLink: ServerLink? = null
 
+    var onServerLinkListUpdated: ((List<ServerLink>) -> Unit)? = null
+
     private var currentServer: Server? = null
 
     /**
@@ -76,6 +78,7 @@ class ServerLinkViewModel(
         _parentLink.tryEmit(parent)
         _currentDirectory.tryEmit(directory)
         _serverLinkList.tryEmit(links)
+        onServerLinkListUpdated?.invoke(links)
     }
 
     /**

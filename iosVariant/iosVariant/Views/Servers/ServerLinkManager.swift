@@ -26,6 +26,9 @@ class ServerLinkManager: ObservableObject {
   @Published var serverLinkList: [ServerLink] = []
 
   init() {
+      self.viewModel.onServerLinkListUpdated = { [weak self] serverLinks in
+          self?.serverLinkList = serverLinks
+      }
     self.serverLinkList = self.viewModel.serverLinkList.value as! [ServerLink]
   }
 

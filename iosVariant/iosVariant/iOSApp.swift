@@ -19,14 +19,15 @@
 import SwiftUI
 import Variant
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 @main
 struct iOSApp: App {
   init() {
     Koin.start()
   }
 
-  var body: some Scene {
+@available(iOS 18.0, *)
+var body: some Scene {
     WindowGroup {
       ContentView()
     }
