@@ -35,6 +35,7 @@ fun ServerView(modifier: Modifier = Modifier) {
     val serverViewModel: ServerViewModel = koinViewModel()
     val serverList by serverViewModel.serverList.collectAsState()
     val editingServer by serverViewModel.editingServer.collectAsState()
+    val browsingServer by serverViewModel.browsingServer.collectAsState()
 
     if (editingServer != null) {
         editingServer?.let { server ->
@@ -49,11 +50,16 @@ fun ServerView(modifier: Modifier = Modifier) {
                 modifier = modifier
             )
         }
+    } else if (browsingServer != null) {
+        browsingServer?.let { server ->
+            BrowseServerView(server, modifier = modifier)
+        }
     } else {
         ServerListView(
             serverList,
             onEditServer = { server -> serverViewModel.editServer(server) },
             onDeleteServer = { _ -> },
+            onBrowseServer = { server -> serverViewModel.browseServer(server) },
             modifier = modifier
         )
     }

@@ -43,6 +43,11 @@ open class ServerViewModel(val serverRepository: ServerRepository) : ViewModel()
     @NativeCoroutinesState
     val editingServer: StateFlow<Server?> = _editingServer.asStateFlow()
 
+    private val _browsingServer = MutableStateFlow<Server?>(viewModelScope, null)
+
+    @NativeCoroutinesState
+    val browsingServer: StateFlow<Server?> = _browsingServer.asStateFlow()
+
     fun editServer(server: Server?) {
         server?.let {
             Log.debug(TAG, "Editing server: ${it.name}")
@@ -57,6 +62,15 @@ open class ServerViewModel(val serverRepository: ServerRepository) : ViewModel()
             Log.debug(TAG, "Saving server: ${server.name} ${server.url}")
             serverRepository.save(server)
             doReloadServers()
+        }
+    }
+
+    fun browseServer(server: Server) {
+        server?.let {
+            Log.debug(TAG, "Browsing server: ${it.name}")
+        }
+        viewModelScope.launch {
+            _browsingServer.emit(server)
         }
     }
 
