@@ -19,6 +19,8 @@
 package org.comixedproject.variant.database
 
 import app.cash.sqldelight.db.SqlDriver
+import org.comixedproject.variant.model.library.DirectoryEntry
+import org.comixedproject.variant.model.net.EntryType
 
 class DatabaseHelper(sqlDriver: SqlDriver) {
     private val database: VariantDb = VariantDb(sqlDriver)
@@ -56,4 +58,26 @@ class DatabaseHelper(sqlDriver: SqlDriver) {
     fun deleteServer(serverId: Long) {
         database.tableQueries.deleteServer(serverId)
     }
+
+    fun loadDirectoryContents(serverId: Long, directory: String) =
+        database.tableQueries.loadDirectoryContents(serverId, directory).executeAsList()
+
+    fun saveDirectoryContent(directoryEntry: DirectoryEntry) =
+        database.tableQueries.saveDirectoryContent(
+            directoryEntry.directoryId,
+            directoryEntry.serverId,
+            directoryEntry.title,
+            directoryEntry.path,
+            directoryEntry.parent,
+            when (directoryEntry.entryType) {
+                EntryType.FILE -> 1
+                else -> 0
+            },
+            directoryEntry.coverUrl
+        )
+
+    fun deleteDirectoryContents(serverId: Long, directory: String) =
+        database.tableQueries.deleteDirectoryContents(serverId, directory)
+
+    fun findDirectory(path: String) = database.tableQueries.findDirectory(path).executeAsOneOrNull()
 }

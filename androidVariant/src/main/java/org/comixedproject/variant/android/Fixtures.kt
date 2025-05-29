@@ -19,6 +19,8 @@
 package org.comixedproject.variant.android
 
 import org.comixedproject.variant.model.Server
+import org.comixedproject.variant.model.library.DirectoryEntry
+import org.comixedproject.variant.model.net.EntryType
 
 val SERVER_LIST = listOf(
     Server(
@@ -58,3 +60,68 @@ val SERVER_LIST = listOf(
     ),
 )
 
+val DIRECTORY_LIST = listOf(
+    DirectoryEntry(
+        "1",
+        1,
+        "All Comics",
+        "/api/v1/all",
+        "/api/v1/root",
+        EntryType.SUBDIRECTORY,
+        null
+    ),
+    DirectoryEntry(
+        "2",
+        1,
+        "Unread Comics",
+        "/api/v1/all?unread=true",
+        "/api/v1/root",
+        EntryType.SUBDIRECTORY,
+        null
+    ),
+    DirectoryEntry(
+        "3",
+        1,
+        "Collections",
+        "/api/v1/collections",
+        "/api/v1/root",
+        EntryType.SUBDIRECTORY,
+        null
+    ),
+    DirectoryEntry(
+        "4",
+        1,
+        "Reading Lists",
+        "/api/v1/lists/reading",
+        "/api/v1/root",
+        EntryType.SUBDIRECTORY,
+        null
+    ),
+    DirectoryEntry(
+        "5",
+        1,
+        "Smart Lists",
+        "/api/v1/lists/smart",
+        "/api/v1/root",
+        EntryType.SUBDIRECTORY,
+        null
+    ),
+    DirectoryEntry(
+        "11",
+        1,
+        "Amazing Spider-Man #75 (v2018) (No Cover Date).cbz",
+        "/api/v1/lists/reading",
+        "/api/v1/root",
+        EntryType.FILE,
+        ""
+    ),
+    DirectoryEntry(
+        "12",
+        1,
+        "Amazing Spider-Man #6 (v2022) (Sep 2022).cbz",
+        "/api/v1/lists/smart",
+        "/api/v1/root",
+        EntryType.FILE,
+        ""
+    )
+)

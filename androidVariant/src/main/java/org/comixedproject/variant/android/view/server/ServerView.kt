@@ -21,9 +21,13 @@ package org.comixedproject.variant.android.view.server
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.comixedproject.variant.android.VariantTheme
+import org.comixedproject.variant.opds.READER_ROOT
 import org.comixedproject.variant.platform.Log
 import org.comixedproject.variant.viewmodel.ServerViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -35,18 +39,55 @@ fun ServerView(modifier: Modifier = Modifier) {
     val serverViewModel: ServerViewModel = koinViewModel()
     val serverList by serverViewModel.serverList.collectAsState()
     val editingServer by serverViewModel.editingServer.collectAsState()
+    val browsingState by serverViewModel.browsingState.collectAsState()
+    val loading by serverViewModel.loading.collectAsState()
+    val downloadingState by serverViewModel.downloadingState.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
     if (editingServer != null) {
         editingServer?.let { server ->
             EditServerView(
                 server,
                 onSave = { server ->
-                    Log.info(TAG, "Saving server: ${server.name} ${server.url}")
-                    serverViewModel.saveServer(server)
-                    serverViewModel.editServer(null)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        Log.info(TAG, "Saving server: ${server.name} ${server.url}")
+                        serverViewModel.saveServer(server)
+                        serverViewModel.editServer(null)
+                    }
                 },
                 onCancel = { serverViewModel.editServer(null) },
                 modifier = modifier
+            )
+        }
+    } else if (browsingState != null) {
+        browsingState?.let { state ->
+            BrowseServerView(
+                state.server,
+                state.path,
+                state.title,
+                state.parentPath,
+                state.contents,
+                downloadingState,
+                loading,
+                modifier = modifier,
+                onLoadDirectory = { path, reload ->
+                    coroutineScope.launch(Dispatchers.IO) {
+                        Log.debug(TAG, "Loading directory: ${path} reload=${reload}")
+                        serverViewModel.loadDirectory(state.server, path, reload)
+                    }
+                },
+                onDownloadFile = { path, filename ->
+                    coroutineScope.launch(Dispatchers.IO) {
+                        Log.debug(TAG, "Downloading file: ${path} -> ${filename}")
+                        serverViewModel.downloadFile(state.server, path, filename)
+                    }
+                },
+                onStopBrowsing = {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        serverViewModel.stopBrowsing()
+                    }
+                },
             )
         }
     } else {
@@ -54,6 +95,12 @@ fun ServerView(modifier: Modifier = Modifier) {
             serverList,
             onEditServer = { server -> serverViewModel.editServer(server) },
             onDeleteServer = { _ -> },
+            onBrowseServer = { server ->
+                coroutineScope.launch(Dispatchers.IO) {
+                    Log.info(TAG, "Starting to browse server: ${server.name}")
+                    serverViewModel.loadDirectory(server, READER_ROOT, false)
+                }
+            },
             modifier = modifier
         )
     }

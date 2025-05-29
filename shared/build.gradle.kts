@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.ksp)
     alias(libs.plugins.native.coroutines)
+    alias(libs.plugins.plugin.serialization)
 }
 
 kotlin {
@@ -35,6 +36,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.sqldelight.driver.android)
+            implementation(libs.ktor.client.android)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.driver.native)
@@ -42,6 +44,9 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.koin.core)
             implementation(libs.kermit.logging)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.bundles.ktor.common)
+            implementation(libs.kmp.io)
 
             api(libs.kmp.viewmodel.core)
         }

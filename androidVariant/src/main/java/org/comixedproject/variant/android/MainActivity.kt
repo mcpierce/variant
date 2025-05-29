@@ -35,6 +35,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val serverViewModel: ServerViewModel = koinViewModel()
+            val directory = applicationContext.filesDir.path
+
+            serverViewModel.libraryDirectory = directory
 
             VariantTheme {
                 Surface(
