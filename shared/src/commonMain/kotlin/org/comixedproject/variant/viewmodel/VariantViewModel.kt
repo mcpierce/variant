@@ -25,6 +25,11 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
+import io.github.irgaly.kfswatch.KfsDirectoryWatcher
+import io.github.irgaly.kfswatch.KfsDirectoryWatcherEvent
+import io.github.irgaly.kfswatch.KfsLogger
 import io.ktor.http.URLBuilder
 import io.ktor.http.takeFrom
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +39,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.comixedproject.variant.database.repository.DirectoryRepository
 import org.comixedproject.variant.database.repository.ServerRepository
 import org.comixedproject.variant.model.Server
+import kotlinx.coroutines.launch
+import org.comixedproject.variant.database.repository.DirectoryRepository
+import org.comixedproject.variant.database.repository.ServerRepository
+import org.comixedproject.variant.model.Server
+import org.comixedproject.variant.model.library.ComicBook
 import org.comixedproject.variant.model.library.DirectoryEntry
 import org.comixedproject.variant.model.state.DownloadingState
 import org.comixedproject.variant.platform.Log
@@ -46,10 +56,45 @@ open class VariantViewModel(
     val directoryRepository: DirectoryRepository
 ) : ViewModel() {
     private var _libraryDirectory = ""
+    private var libraryWatcher: KfsDirectoryWatcher? = null
+
+    private var _libraryDirectory = ""
+
+    @NativeCoroutinesState
     var libraryDirectory: String
         get() = _libraryDirectory
         set(directory) {
             _libraryDirectory = directory
+            viewModelScope.coroutineScope.launch {
+
+                libraryWatcher?.let { watcher ->
+                    Log.debug(TAG, "Stopping current library monitor")
+                    watcher.removeAll()
+                    watcher.close()
+                }
+
+                loadLibraryContents()
+
+                Log.debug(TAG, "Preparing to monitor library: ${_libraryDirectory}")
+                libraryWatcher = KfsDirectoryWatcher(
+                    scope = viewModelScope.coroutineScope,
+                    logger = object : KfsLogger {
+                        override fun debug(message: String) {
+                            Log.debug(TAG, message)
+                        }
+
+                        override fun error(message: String) {
+                            Log.error(TAG, message)
+                        }
+                    })
+                libraryWatcher?.add(_libraryDirectory)
+                libraryWatcher?.onEventFlow?.collect { event: KfsDirectoryWatcherEvent ->
+                    viewModelScope.coroutineScope.launch {
+                        Log.debug(TAG, "Received file watcher event: ${event}")
+                        loadLibraryContents()
+                    }
+                }
+            }
         }
 
     private val _serverList =
@@ -109,6 +154,12 @@ open class VariantViewModel(
 
     @NativeCoroutinesState
     val downloadingState: StateFlow<MutableList<DownloadingState>> = _downloadingState.asStateFlow()
+
+    private val _comicBookList =
+        MutableStateFlow<List<ComicBook>>(viewModelScope, listOf())
+
+    @NativeCoroutinesState
+    val comicBookList: StateFlow<List<ComicBook>> = _comicBookList.asStateFlow()
 
     fun editServer(server: Server?) {
         server?.let {
@@ -214,5 +265,24 @@ open class VariantViewModel(
     suspend fun stopBrowsing() {
         Log.debug(TAG, "Clearing the server browsing state")
         _browsing.emit(false)
+    }
+
+    private fun loadLibraryContents() {
+        Log.debug(TAG, "Loading library contents: ${_libraryDirectory}")
+
+        val path = File(_libraryDirectory)
+        val contents =
+            path.listFiles.filter { !it.isDirectory }
+                .filter { it.extension.equals(".cbz") || it.extension.equals(".cbr") }
+                .map { entry ->
+                    Log.debug(TAG, "Found file: ${entry.path}")
+                    ComicBook(
+                        entry.fullPath,
+                        entry.name,
+                        entry.size,
+                        entry.lastModifiedEpoch
+                    )
+                }.toList()
+        _comicBookList.tryEmit(contents)
     }
 }
