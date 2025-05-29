@@ -55,3 +55,69 @@ public var SERVER_LIST = [
         password: "my!password"
     ),
 ]
+
+public var DIRECTORY_LIST = [
+    DirectoryEntry(
+        directoryId: "1",
+        serverId: 1,
+        title: "All Comics",
+        path: "/api/v1/all",
+        parent: "/api/v1/root",
+        directory: true,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "2",
+        serverId: 1,
+        title: "Unread Comics",
+        path: "/api/v1/all?unread=true",
+        parent: "/api/v1/root",
+        directory: true,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "3",
+        serverId: 1,
+        title: "Collections",
+        path: "/api/v1/collections",
+        parent: "/api/v1/root",
+        directory: true,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "4",
+        serverId: 1,
+        title: "Reading Lists",
+        path: "/api/v1/lists/reading",
+        parent: "/api/v1/root",
+        directory: true,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "5",
+        serverId: 1,
+        title: "Smart Lists",
+        path: "/api/v1/lists/smart",
+        parent: "/api/v1/root",
+        directory: true,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "11",
+        serverId: 1,
+        title: "Amazing Spider-Man #75 (v2018) (No Cover Date).cbz",
+        path: "/api/v1/lists/reading",
+        parent: "/api/v1/root",
+        directory: false,
+        coverUrl: ""
+    ),
+    DirectoryEntry(
+        directoryId: "12",
+        serverId: 1,
+        title: "Amazing Spider-Man #6 (v2022) (Sep 2022).cbz",
+        path: "/api/v1/lists/smart",
+        parent: "/api/v1/root",
+        directory: false,
+        coverUrl: ""
+    ),
+]

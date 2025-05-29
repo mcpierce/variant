@@ -16,35 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-import SwiftUI
-import Variant
+package org.comixedproject.variant.model.state
 
-private let TAG = "ServerListItemView"
+import org.comixedproject.variant.model.Server
 
-struct ServerListItemView: View {
-    let server: Server
-
-    var onEditServer: (Server) -> Void
-    var onDeleteServer: (Server) -> Void
-    var onServerClicked: (Server) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(server.name)
-                .font(.headline)
-            Text(server.url)
-                .font(.subheadline)
-            Text(server.username)
-                .font(.body)
-        }
-    }
-}
-
-#Preview {
-    ServerListItemView(
-        server: SERVER_LIST[0],
-        onEditServer: { _ in },
-        onDeleteServer: { _ in },
-        onServerClicked: { _ in }
-    )
-}
+data class DownloadingState(
+    val server: Server,
+    val path: String,
+    var received: Long,
+    var total: Long
+)

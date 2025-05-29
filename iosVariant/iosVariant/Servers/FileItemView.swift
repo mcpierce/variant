@@ -19,32 +19,21 @@
 import SwiftUI
 import Variant
 
-private let TAG = "ServerListItemView"
+struct FileItemView: View {
+    let entry: DirectoryEntry
 
-struct ServerListItemView: View {
-    let server: Server
-
-    var onEditServer: (Server) -> Void
-    var onDeleteServer: (Server) -> Void
-    var onServerClicked: (Server) -> Void
+    var onDownloadFile: (String, String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(server.name)
-                .font(.headline)
-            Text(server.url)
-                .font(.subheadline)
-            Text(server.username)
-                .font(.body)
+        VStack {
+            Text(entry.title)
         }
     }
 }
 
 #Preview {
-    ServerListItemView(
-        server: SERVER_LIST[0],
-        onEditServer: { _ in },
-        onDeleteServer: { _ in },
-        onServerClicked: { _ in }
+    FileItemView(
+        entry: DIRECTORY_LIST.filter { $0.directory == false }.first!,
+        onDownloadFile: { _, _ in }
     )
 }

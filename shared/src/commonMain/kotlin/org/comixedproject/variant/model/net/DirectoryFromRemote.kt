@@ -16,35 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-import SwiftUI
-import Variant
+package org.comixedproject.variant.model.net
 
-private let TAG = "ServerListItemView"
+import kotlinx.serialization.Serializable
 
-struct ServerListItemView: View {
-    let server: Server
-
-    var onEditServer: (Server) -> Void
-    var onDeleteServer: (Server) -> Void
-    var onServerClicked: (Server) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(server.name)
-                .font(.headline)
-            Text(server.url)
-                .font(.subheadline)
-            Text(server.username)
-                .font(.body)
-        }
-    }
-}
-
-#Preview {
-    ServerListItemView(
-        server: SERVER_LIST[0],
-        onEditServer: { _ in },
-        onDeleteServer: { _ in },
-        onServerClicked: { _ in }
-    )
-}
+@Serializable
+data class DirectoryFromRemote(
+    val directoryId: String,
+    val title: String,
+    val path: String,
+    val directory: Boolean,
+    val coverUrl: String?
+)

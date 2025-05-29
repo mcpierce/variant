@@ -16,35 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses>
  */
 
-import SwiftUI
-import Variant
+package org.comixedproject.variant.network
 
-private let TAG = "ServerListItemView"
 
-struct ServerListItemView: View {
-    let server: Server
+import io.ktor.client.plugins.logging.Logger
+import org.comixedproject.variant.platform.Log
 
-    var onEditServer: (Server) -> Void
-    var onDeleteServer: (Server) -> Void
-    var onServerClicked: (Server) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(server.name)
-                .font(.headline)
-            Text(server.url)
-                .font(.subheadline)
-            Text(server.username)
-                .font(.body)
-        }
+class HttpClientLogger(val tag: String) : Logger {
+    override fun log(message: String) {
+        Log.debug(tag, message)
     }
 }
 
-#Preview {
-    ServerListItemView(
-        server: SERVER_LIST[0],
-        onEditServer: { _ in },
-        onDeleteServer: { _ in },
-        onServerClicked: { _ in }
-    )
-}
